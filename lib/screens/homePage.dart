@@ -48,12 +48,17 @@ class _HomePageState extends State<HomePage> {
                                             builder: (context) => TaskPage(
                                                   task: (snapshot.data
                                                       as dynamic)[index],
-                                                )));
+                                                )))
+                                        .then((value) => setState(() {}));
                                   },
                                   child: TaskCardWidget(
                                       title: (snapshot.data as dynamic)[index]
                                           .title,
-                                      desc: "some"
+                                      desc: (snapshot.data as dynamic)[index]
+                                                .desc !=
+                                            null
+                                        ? (snapshot.data as dynamic)[index].desc
+                                        : "No description",
                                       // desc: (snapshot.data as dynamic)[index].desc
                                       ));
                             });
@@ -67,6 +72,8 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
               Positioned(
+                height: 60,
+                  width: 60,
                   bottom: 24,
                   right: 0,
                   child: GestureDetector(

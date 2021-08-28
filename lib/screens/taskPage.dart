@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:gamma/db_helper.dart';
 import 'package:gamma/models/task.dart';
 import 'package:gamma/models/todo.dart';
-import 'package:gamma/screens/homePage.dart';
 import 'package:gamma/widgets.dart';
 
 class TaskPage extends StatefulWidget {
@@ -15,14 +14,34 @@ class TaskPage extends StatefulWidget {
 
 class _TaskPageState extends State<TaskPage> {
   DatabaseHelper _dbHelper = DatabaseHelper();
+  int? taskId = 0;
   String _taskTitle = "";
+  String _taskDesc = "";
+
+  late FocusNode titleFocus;
+  late FocusNode descFocus;
+  late FocusNode todoFocus;
 
   @override
   void initState() {
     if (widget.task != null) {
+      taskId = widget.task!.id;
       _taskTitle = widget.task!.title;
+      _taskDesc = (widget.task as dynamic).desc;
     }
+    titleFocus = FocusNode();
+    descFocus = FocusNode();
+    todoFocus = FocusNode();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    titleFocus.dispose();
+    descFocus.dispose();
+    todoFocus.dispose();
+
+    super.dispose();
   }
 
   @override
@@ -50,6 +69,7 @@ class _TaskPageState extends State<TaskPage> {
                   ),
                   Expanded(
                       child: TextField(
+                    focusNode: titleFocus,
                     cursorColor: Color(0xFF7349FE),
                     onSubmitted: (value) async {
                       if (value != "") {
@@ -58,10 +78,14 @@ class _TaskPageState extends State<TaskPage> {
                           Task _newTask = Task(
                             title: value,
                           );
-                          await _dbHelper.insertTask(_newTask);
+                          taskId = await _dbHelper.insertTask(_newTask);
+                          setState(() {
+                            _taskTitle = value;
+                          });
                         } else {
-                          print("Update task");
+                          await _dbHelper.updateTaskTitle(taskId, value);
                         }
+                        descFocus.requestFocus();
                       }
                     },
                     controller: TextEditingController()..text = _taskTitle,
@@ -80,7 +104,15 @@ class _TaskPageState extends State<TaskPage> {
             Padding(
                 padding: EdgeInsets.only(bottom: 12),
                 child: TextField(
+                  focusNode: descFocus,
+                  onSubmitted: (value) async {
+                    if (value != "") {
+                      await _dbHelper.updateTaskDesc(taskId, value);
+                    }
+                    todoFocus.requestFocus();
+                  },
                   cursorColor: Color(0xFF7349FE),
+                  controller: TextEditingController()..text = _taskDesc,
                   style: TextStyle(
                       fontSize: 18,
                       // fontWeight: FontWeight.bold,
@@ -94,7 +126,7 @@ class _TaskPageState extends State<TaskPage> {
             Expanded(
                 child: FutureBuilder<List<Todo>>(
               initialData: [],
-              future: _dbHelper.getTodos((widget.task as dynamic).id),
+              future: _dbHelper.getTodos(taskId),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   return ListView.builder(
@@ -102,14 +134,16 @@ class _TaskPageState extends State<TaskPage> {
                       itemCount: (snapshot.data as dynamic).length,
                       itemBuilder: (context, index) {
                         return GestureDetector(
-                            onTap: () {
-                              // Navigator.push(
-                              //     context,
-                              //     MaterialPageRoute(
-                              //         builder: (context) => TaskPage(
-                              //               task: (snapshot.data
-                              //                   as dynamic)[index],
-                              //             )));
+                            onTap: () async {
+                              if ((snapshot.data as dynamic)[index].isDone ==
+                                  0) {
+                                await _dbHelper.updateTodoDone(
+                                    (snapshot.data as dynamic)[index].id, 1);
+                              } else {
+                                await _dbHelper.updateTodoDone(
+                                    (snapshot.data as dynamic)[index].id, 0);
+                              }
+                              setState(() {});
                             },
                             child: TodoWidget(
                               text: (snapshot.data as dynamic)[index].title,
@@ -145,25 +179,21 @@ class _TaskPageState extends State<TaskPage> {
                       )),
                   Expanded(
                     child: TextField(
+                      focusNode: todoFocus,
+                      cursorColor: Color(0xFF7349FE),
+                      controller: TextEditingController()..text = "",
                       onSubmitted: (value) async {
-                        if (value != "") {
-                          if (widget.task != null) {
-                            Todo _newTodo = Todo(
-                                taskId: widget.task!.id,
-                                title: value,
-                                isDone: 0);
-                            await _dbHelper.insertTodo(_newTodo);
-                            setState(() {
-                              
-                            });
-                          } else {
-                            print("Update task");
-                          }
+                        if (value != "" && taskId != 0) {
+                          Todo _newTodo =
+                              Todo(taskId: taskId, title: value, isDone: 0);
+                          await _dbHelper.insertTodo(_newTodo);
+                          // setState(() {
+                          todoFocus.requestFocus();
+                          // });
                         }
                       },
                       decoration: InputDecoration(
-                          hintText: "Enter todo item ...",
-                          border: InputBorder.none),
+                          hintText: "Todo ", border: InputBorder.none),
                     ),
                   )
                 ],
@@ -172,12 +202,16 @@ class _TaskPageState extends State<TaskPage> {
           ],
         ),
         Positioned(
+            height: 60,
+            width: 60,
             bottom: 24,
             right: 24,
             child: GestureDetector(
-              onTap: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => HomePage()));
+              onTap: () async {
+                if (taskId != 0) {
+                  await _dbHelper.deleteTask(taskId);
+                  Navigator.pop(context);
+                }
               },
               child: Container(
                 padding: EdgeInsets.all(10),

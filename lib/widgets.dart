@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
 class TaskCardWidget extends StatelessWidget {
-  const TaskCardWidget({Key? key, required this.title, required this.desc})
-      : super(key: key);
   final String title;
   final String desc;
+  const TaskCardWidget({Key? key, required this.title, required this.desc})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +29,9 @@ class TaskCardWidget extends StatelessWidget {
                 child: Text(
                   desc,
                   style: TextStyle(
+                    fontStyle: desc == "No description"
+                          ? FontStyle.italic
+                          : FontStyle.normal,
                       fontSize: 16, color: Color(0xFF868290), height: 1.5),
                 ))
           ],
@@ -66,11 +69,17 @@ class TodoWidget extends StatelessWidget {
                     image: AssetImage("assets/images/check_icon.png"),
                   )
                ),
-          Text(text, style: TextStyle(
-            color: isDone ? Color(0xFF868290) : Color(0xFF211551),
-            fontSize: 16,
-            fontWeight: FontWeight.bold
-          ),)
+          Flexible(
+            child: Text(
+              text,
+              style: TextStyle(
+                  color: isDone ? Color(0xFF868290) : Color(0xFF211551),
+                  fontSize: 16,
+              decoration: isDone
+                      ? TextDecoration.lineThrough
+                      : TextDecoration.none),
+            ),
+          )
         ],
       ),
     );
