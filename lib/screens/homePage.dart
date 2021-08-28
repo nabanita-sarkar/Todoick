@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gamma/db_helper.dart';
 import 'package:gamma/screens/taskPage.dart';
 import 'package:gamma/widgets.dart';
-import '../models/task.dart';
+import 'package:gamma/models/task.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -52,6 +52,7 @@ class _HomePageState extends State<HomePage> {
                                         .then((value) => setState(() {}));
                                   },
                                   child: TaskCardWidget(
+                                    id: (snapshot.data as dynamic)[index].id,
                                       title: (snapshot.data as dynamic)[index]
                                           .title,
                                       desc: (snapshot.data as dynamic)[index]

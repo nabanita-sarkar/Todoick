@@ -1,3 +1,4 @@
+// import 'dart:developer';
 import 'package:gamma/models/todo.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
@@ -23,8 +24,9 @@ class DatabaseHelper {
   Future<int> insertTask(Task task) async {
     int taskId = 0;
     Database _db = await database();
-    await _db.insert('tasks', task.toMap(),
-        conflictAlgorithm: ConflictAlgorithm.abort)
+    await _db
+        .insert('tasks', task.toMap(),
+            conflictAlgorithm: ConflictAlgorithm.abort)
         .then((value) => taskId = value);
     return taskId;
   }
@@ -67,6 +69,19 @@ class DatabaseHelper {
           title: todoMap[index]['title'],
           isDone: todoMap[index]['isDone']);
     });
+  }
+
+  Future<int> getPendingTodoCount(int taskId) async {
+    int pendingTodoCount = 0;
+    Database _db = await database();
+    await _db
+        .rawQuery(
+            "SELECT COUNT(*) FROM todo WHERE taskId = '$taskId' and isDone = 0")
+        .then((value) {
+      // log(value[0]["COUNT(*)"].toString());
+      return pendingTodoCount = int.parse(value[0]["COUNT(*)"].toString());
+    });
+    return pendingTodoCount;
   }
 
   Future<void> updateTodoDone(int? id, int isDone) async {

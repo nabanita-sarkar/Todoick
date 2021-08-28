@@ -27,7 +27,9 @@ class _TaskPageState extends State<TaskPage> {
     if (widget.task != null) {
       taskId = widget.task!.id;
       _taskTitle = widget.task!.title;
-      _taskDesc = (widget.task as dynamic).desc;
+      if (widget.task!.desc != null) {
+        _taskDesc = (widget.task as dynamic).desc;
+      }
     }
     titleFocus = FocusNode();
     descFocus = FocusNode();
@@ -183,13 +185,15 @@ class _TaskPageState extends State<TaskPage> {
                       cursorColor: Color(0xFF7349FE),
                       controller: TextEditingController()..text = "",
                       onSubmitted: (value) async {
-                        if (value != "" && taskId != 0) {
-                          Todo _newTodo =
-                              Todo(taskId: taskId, title: value, isDone: 0);
-                          await _dbHelper.insertTodo(_newTodo);
-                          // setState(() {
-                          todoFocus.requestFocus();
-                          // });
+                        if (value != "") {
+                          if (taskId != 0) {
+                            Todo _newTodo =
+                                Todo(taskId: taskId, title: value, isDone: 0);
+                            await _dbHelper.insertTodo(_newTodo);
+                            setState(() {
+                              todoFocus.requestFocus();
+                            });
+                          }
                         }
                       },
                       decoration: InputDecoration(
