@@ -37,6 +37,18 @@ class _TaskCardWidgetState extends State<TaskCardWidget> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
+                Padding(
+                  padding: const EdgeInsets.only(right: 8.0),
+                  child: Container(
+                    width: 16,
+                    height: 16,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border.all(
+                            color: Color(int.parse(widget.desc, radix: 16)),
+                            width: 2)),
+                  ),
+                ),
                 Text(
                   widget.title,
                   style: TextStyle(
@@ -44,6 +56,7 @@ class _TaskCardWidgetState extends State<TaskCardWidget> {
                       fontSize: 20,
                       fontWeight: FontWeight.w500),
                 ),
+                Spacer(),
                 FutureBuilder<int?>(
                     future: _dbHelper.getPendingTodoCount(taskId),
                     builder: (context, snapshot) {

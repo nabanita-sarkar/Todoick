@@ -4,6 +4,7 @@ import 'package:todoick/db_helper.dart';
 import 'package:todoick/models/task.dart';
 import 'package:todoick/models/todo.dart';
 import 'package:todoick/widgets.dart';
+import 'dart:developer' as devLog;
 
 class TaskPage extends StatefulWidget {
   final Task? task;
@@ -61,7 +62,6 @@ class _TaskPageState extends State<TaskPage> {
                 children: [
                   Expanded(
                       child: TextField(
-                        
                     focusNode: titleFocus,
                     cursorColor: Color(0xFF7349FE),
                     onSubmitted: (value) async {
@@ -168,14 +168,7 @@ class _TaskPageState extends State<TaskPage> {
               margin: EdgeInsets.only(bottom: 16),
               child: Row(
                 children: [
-                  // Container(
-
-                  //     margin: EdgeInsets.only(right: 12),
-                  //     decoration: BoxDecoration(
-                  //         color: Colors.blueGrey.shade100,
-                  //     ),
-                  //     child:
-                  Expanded(
+                  Flexible(
                     child: TextField(
                       focusNode: todoFocus,
                       cursorColor: Colors.blueGrey.shade900,
@@ -193,7 +186,7 @@ class _TaskPageState extends State<TaskPage> {
                         }
                       },
                       decoration: InputDecoration(
-                        border: OutlineInputBorder(
+                          border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10.0),
                             borderSide: BorderSide(
                               width: 0,
@@ -205,6 +198,27 @@ class _TaskPageState extends State<TaskPage> {
                           contentPadding:
                               EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                           hintText: "Todo "),
+                    ),
+                  ),
+                  Container(
+                    width: 70,
+                    margin: EdgeInsets.only(left: 8),
+                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+                    decoration: BoxDecoration(
+                        color: Color(0xFFEBECF0),
+                        borderRadius: BorderRadius.circular(10)),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                          width: 16,
+                          height: 16,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(6),
+                              border: Border.all(color: Colors.blue, width: 2)),
+                        ),
+                        Icon(FeatherIcons.chevronDown)
+                      ],
                     ),
                   )
                 ],
