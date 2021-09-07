@@ -1,4 +1,4 @@
-# gamma
+# Todoick
 
 A new Flutter project.
 

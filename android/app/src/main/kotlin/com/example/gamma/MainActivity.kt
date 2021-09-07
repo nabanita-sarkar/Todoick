@@ -1,4 +1,4 @@
-package com.example.gamma
+package com.example.todoick
 
 import io.flutter.embedding.android.FlutterActivity
 
