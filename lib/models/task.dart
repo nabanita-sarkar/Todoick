@@ -1,7 +1,7 @@
 class Task {
   final int? id;
   final String title;
-  final String? desc;
+  final dynamic desc;
   Task({this.id, required this.title, this.desc});
 
   Map<String, dynamic> toMap() {

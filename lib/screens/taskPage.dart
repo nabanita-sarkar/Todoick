@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:gamma/db_helper.dart';
-import 'package:gamma/models/task.dart';
-import 'package:gamma/models/todo.dart';
-import 'package:gamma/widgets.dart';
+import 'package:flutter_feather_icons/flutter_feather_icons.dart';
+import 'package:todoick/db_helper.dart';
+import 'package:todoick/models/task.dart';
+import 'package:todoick/models/todo.dart';
+import 'package:todoick/widgets.dart';
 
 class TaskPage extends StatefulWidget {
   final Task? task;
@@ -55,22 +56,12 @@ class _TaskPageState extends State<TaskPage> {
         Column(
           children: [
             Padding(
-              padding: EdgeInsets.only(top: 24),
+              padding: EdgeInsets.only(top: 16, left: 24, right: 16),
               child: Row(
                 children: [
-                  InkWell(
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
-                    child: Padding(
-                      padding: EdgeInsets.all(24),
-                      child: Image(
-                          image:
-                              AssetImage("assets/images/back_arrow_icon.png")),
-                    ),
-                  ),
                   Expanded(
                       child: TextField(
+                        
                     focusNode: titleFocus,
                     cursorColor: Color(0xFF7349FE),
                     onSubmitted: (value) async {
@@ -87,7 +78,7 @@ class _TaskPageState extends State<TaskPage> {
                         } else {
                           await _dbHelper.updateTaskTitle(taskId, value);
                         }
-                        descFocus.requestFocus();
+                        todoFocus.requestFocus();
                       }
                     },
                     controller: TextEditingController()..text = _taskTitle,
@@ -99,31 +90,40 @@ class _TaskPageState extends State<TaskPage> {
                         fontSize: 26,
                         fontWeight: FontWeight.bold,
                         color: Color(0xFF211551)),
-                  ))
+                  )),
+                  InkWell(
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    child: Padding(
+                      padding: EdgeInsets.all(0),
+                      child: Icon(FeatherIcons.x),
+                    ),
+                  ),
                 ],
               ),
             ),
-            Padding(
-                padding: EdgeInsets.only(bottom: 12),
-                child: TextField(
-                  focusNode: descFocus,
-                  onSubmitted: (value) async {
-                    if (value != "") {
-                      await _dbHelper.updateTaskDesc(taskId, value);
-                    }
-                    todoFocus.requestFocus();
-                  },
-                  cursorColor: Color(0xFF7349FE),
-                  controller: TextEditingController()..text = _taskDesc,
-                  style: TextStyle(
-                      fontSize: 18,
-                      // fontWeight: FontWeight.bold,
-                      color: Color(0xFF211551)),
-                  decoration: InputDecoration(
-                      hintText: "Enter description for the task ...",
-                      border: InputBorder.none,
-                      contentPadding: EdgeInsets.symmetric(horizontal: 24)),
-                )),
+            // Padding(
+            //     padding: EdgeInsets.only(bottom: 12),
+            //     child: TextField(
+            //       focusNode: descFocus,
+            //       onSubmitted: (value) async {
+            //         if (value != "") {
+            //           await _dbHelper.updateTaskDesc(taskId, value);
+            //         }
+            //         todoFocus.requestFocus();
+            //       },
+            //       cursorColor: Color(0xFF7349FE),
+            //       controller: TextEditingController()..text = _taskDesc,
+            //       style: TextStyle(
+            //           fontSize: 18,
+            //           // fontWeight: FontWeight.bold,
+            //           color: Color(0xFF211551)),
+            //       decoration: InputDecoration(
+            //           hintText: "Enter description for the task ...",
+            //           border: InputBorder.none,
+            //           contentPadding: EdgeInsets.symmetric(horizontal: 24)),
+            //     )),
             // TodoWidget(text: "Todo", isDone: true),
             Expanded(
                 child: FutureBuilder<List<Todo>>(
@@ -163,26 +163,22 @@ class _TaskPageState extends State<TaskPage> {
               },
             )),
 
-            Padding(
+            Container(
               padding: const EdgeInsets.symmetric(horizontal: 24),
+              margin: EdgeInsets.only(bottom: 16),
               child: Row(
                 children: [
-                  Container(
-                      width: 20,
-                      height: 20,
-                      margin: EdgeInsets.only(right: 12),
-                      decoration: BoxDecoration(
-                          color: Colors.transparent,
-                          border:
-                              Border.all(color: Color(0xFF7349FE), width: 1.5),
-                          borderRadius: BorderRadius.circular(6)),
-                      child: Image(
-                        image: AssetImage("assets/images/check_icon.png"),
-                      )),
+                  // Container(
+
+                  //     margin: EdgeInsets.only(right: 12),
+                  //     decoration: BoxDecoration(
+                  //         color: Colors.blueGrey.shade100,
+                  //     ),
+                  //     child:
                   Expanded(
                     child: TextField(
                       focusNode: todoFocus,
-                      cursorColor: Color(0xFF7349FE),
+                      cursorColor: Colors.blueGrey.shade900,
                       controller: TextEditingController()..text = "",
                       onSubmitted: (value) async {
                         if (value != "") {
@@ -197,7 +193,18 @@ class _TaskPageState extends State<TaskPage> {
                         }
                       },
                       decoration: InputDecoration(
-                          hintText: "Todo ", border: InputBorder.none),
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                            borderSide: BorderSide(
+                              width: 0,
+                              style: BorderStyle.none,
+                            ),
+                          ),
+                          filled: true,
+                          fillColor: Color(0xFFEBECF0),
+                          contentPadding:
+                              EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          hintText: "Todo "),
                     ),
                   )
                 ],
@@ -205,28 +212,6 @@ class _TaskPageState extends State<TaskPage> {
             )
           ],
         ),
-        Positioned(
-            height: 60,
-            width: 60,
-            bottom: 24,
-            right: 24,
-            child: GestureDetector(
-              onTap: () async {
-                if (taskId != 0) {
-                  await _dbHelper.deleteTask(taskId);
-                  Navigator.pop(context);
-                }
-              },
-              child: Container(
-                padding: EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                    color: Color(0xFFFE3577),
-                    borderRadius: BorderRadius.circular(50)),
-                child: Image(
-                  image: AssetImage("assets/images/delete_icon.png"),
-                ),
-              ),
-            ))
       ]),
     )));
   }
